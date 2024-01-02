@@ -9,6 +9,7 @@ import 'package:flutter/widgets.dart';
 
 import 'constraints/constrant.dart';
 import 'pages/Sorting/sort.dart';
+import 'pages/Stack/Stack.dart';
 import 'providers/search/binary_search_provider.dart';
 
 class ShowAlgoScreen extends StatefulWidget {
@@ -162,10 +163,8 @@ class _ShowAlgoScreenState extends State<ShowAlgoScreen> {
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                              builder: (context) => kadane_Page<
-                                                      kadaneProvider>(
-                                                    title: 'Binary Search',
-                                                  )),
+                                              builder: (context) =>
+                                                  StackPage()),
                                         );
                                       }
                                     },
