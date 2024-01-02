@@ -6,37 +6,98 @@ import 'package:algo3/constraints/constrant.dart';
 // import 'package:fluttertoast/fluttertoast.dart';
 import 'package:clipboard/clipboard.dart';
 
-class StackPage extends StatefulWidget {
+class QueuePage extends StatefulWidget {
   @override
-  State<StackPage> createState() => _StackPageState();
+  State<QueuePage> createState() => _QueuePageState();
 }
 
-class _StackPageState extends State<StackPage> {
-  late List<int> integerList = [];
+class _QueuePageState extends State<QueuePage>
+    with SingleTickerProviderStateMixin {
+  List<int> QueueintegerList = [];
   int size = 3;
+  int queueing = 0;
 
   final TextEditingController _sizeEditingController = TextEditingController();
   final TextEditingController _elementEditingController =
       TextEditingController();
 
   void addElement() {
-    if (size > integerList.length) {
+    if (size > QueueintegerList.length) {
       setState(() {
         int nextElement = int.parse(_elementEditingController.text);
-        integerList.add(nextElement);
+        QueueintegerList.add(nextElement);
+        _listKey.currentState?.insertItem(QueueintegerList.length - 1);
         _elementEditingController.clear();
+        queueing++;
       });
     }
+  }
+
+  late AnimationController _controller;
+  double offset = 0.0; // Initial offset
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    );
+  }
+
+  void moveElementsToLeft() {
+    _controller.forward();
   }
 
   bool pushisCopied = false;
   bool popisCopied = false;
   bool topiscopied = false;
   bool Fulliscopied = false;
+
   void removeElement() {
-    if (integerList.isNotEmpty) {
+    if (QueueintegerList.isNotEmpty) {
       setState(() {
-        integerList.removeLast();
+        QueueintegerList.removeAt(0);
+        _listKey.currentState?.removeItem(
+          0,
+          (context, animation) => SlideTransition(
+            position: Tween<Offset>(
+              begin: Offset.zero,
+              end: const Offset(0.5, 0), // Slide to the right
+            ).animate(animation),
+            child: FadeTransition(
+              opacity: animation,
+              child: Container(
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(
+                  color: Constants.primaryColor,
+                  border: Border.all(
+                    color: Colors.black,
+                    width: 2.0,
+                  ),
+                  borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                ),
+                child: Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Center(
+                    child: Text(
+                      // Ensure that queueindex is within the valid range
+                      queueing < QueueintegerList.length
+                          ? '${QueueintegerList[queueing]}'
+                          : '',
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          // onRemoved: () {
+          //   print(queueing);
+          //   queueing--;
+          // },
+        );
       });
     } else {
       showDialog(
@@ -57,6 +118,8 @@ class _StackPageState extends State<StackPage> {
       );
     }
   }
+
+  final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
 
   @override
   Widget build(BuildContext context) {
@@ -94,7 +157,7 @@ class _StackPageState extends State<StackPage> {
           padding:
               EdgeInsets.only(left: MediaQuery.of(context).size.width * .23),
           child: Text(
-            "Stack",
+            "Queue",
             style: TextStyle(color: Constants.sortsecondryColor, fontSize: 25),
           ),
         ),
@@ -111,51 +174,101 @@ class _StackPageState extends State<StackPage> {
           children: [
             const SizedBox(height: 100),
             Center(
-              child: Hero(
-  tag: 'stack_list', // Specify a unique tag for the Hero animation
-  child: AnimatedContainer(
-    duration: const Duration(milliseconds: 500),
-    width: 150,
-    height: size * 60,
-    decoration: const BoxDecoration(
-      border: Border(
-        left: BorderSide(color: Colors.black, width: 2.0),
-        right: BorderSide(color: Colors.black, width: 2.0),
-        bottom: BorderSide(color: Colors.black, width: 2.0),
-      ),
-    ),
-    child: ListView.builder(
-      reverse: true,
-      itemCount: integerList.length,
-      itemBuilder: (context, index) {
-        final int value = integerList[index];
-        return Hero(
-          tag: 'item_$index', // Use a unique tag for each item
-          child: AnimatedOpacity(
-            duration: const Duration(milliseconds: 500),
-            opacity: 1.0,
-            child: ListTile(
-              title: Container(
-                color: Constants.primaryColor,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Center(
-                    child: Text(
-                      '$value',
-                      style: const TextStyle(fontSize: 16),
-                    ),
+              child: Container(
+                width: size * 60,
+                height: 100,
+                decoration: const BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(color: Colors.black, width: 2.0),
+                    top: BorderSide(color: Colors.black, width: 2.0),
                   ),
+                ),
+                child: AnimatedList(
+                  key: _listKey,
+                  scrollDirection: Axis.horizontal,
+                  shrinkWrap: true,
+                  physics: const ClampingScrollPhysics(),
+                  initialItemCount: QueueintegerList.length,
+                  itemBuilder: (context, index, animation) {
+                    final int value = QueueintegerList[index];
+
+                    return FadeTransition(
+                      opacity: animation,
+                      child: SlideTransition(
+                        position: Tween<Offset>(
+                          begin: const Offset(0.5, 0), // Start from the right
+                          end: Offset.zero, // End at the original position
+                        ).animate(animation),
+                        child: Container(
+                          width: 50,
+                          height: 50,
+                          decoration: BoxDecoration(
+                            color: Constants.primaryColor,
+                            border: Border.all(
+                              color: Colors.black,
+                              width: 2.0,
+                            ),
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(8.0)),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Center(
+                              child: Text(
+                                '$value',
+                                style: const TextStyle(fontSize: 16),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
                 ),
               ),
             ),
-          ),
-        );
-      },
-    ),
-  ),
-),
-
+            // SizedBox(
+            //   height: screenHeight * 050,
+            // ),
+            Container(
+              width: size * 70,
+              height: 50,
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text("POP"),
+                  Text("Push"),
+                ],
+              ),
             ),
+            Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Container(
+                width: double.infinity,
+                height: 50,
+                child: Row(
+                  // mainAxisAlignment: MainAxisAlignment.,
+                  children: [
+                    const Text(
+                      "Size :-",
+                      style: TextStyle(
+                        fontSize: 18, // Set your desired font size
+                        fontWeight:
+                            FontWeight.bold, // Set your desired font weight
+                      ),
+                    ),
+                    Text(
+                      "$size",
+                      style: const TextStyle(
+                        fontSize: 18, // Set your desired font size
+                        fontWeight:
+                            FontWeight.normal, // Set your desired font weight
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            )
           ],
         ),
         panel: Container(
@@ -180,7 +293,7 @@ class _StackPageState extends State<StackPage> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               buildIconButton("Push", Icons.layers, () {
-                                if (size > integerList.length) {
+                                if (size > QueueintegerList.length) {
                                   AddElmentsSizeOfArray(context);
                                 } else {
                                   showDialog(
@@ -208,8 +321,7 @@ class _StackPageState extends State<StackPage> {
                               buildIconButton("Size", Icons.bar_chart, () {
                                 genrateSizeOfArray(context);
                               }),
-                              buildIconButton("Top", Icons.vertical_align_top,
-                                  () {
+                              buildIconButton("Front", Icons.first_page, () {
                                 showDialog(
                                   context: context,
                                   builder: (BuildContext context) {
@@ -218,9 +330,9 @@ class _StackPageState extends State<StackPage> {
                                         children: [
                                           const Text("Top Element: "),
                                           Text(
-                                            integerList.isNotEmpty
-                                                ? '${integerList.last}'
-                                                : '',
+                                            QueueintegerList.isNotEmpty
+                                                ? '${QueueintegerList.last}'
+                                                : 'null',
                                           ),
                                         ],
                                       ),
@@ -228,7 +340,6 @@ class _StackPageState extends State<StackPage> {
                                   },
                                 );
                               }),
-                              // SortButton<T>(),
                             ],
                           ),
                         ),
@@ -258,7 +369,7 @@ class _StackPageState extends State<StackPage> {
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               Text(
-                                Constants.StackDesc,
+                                Constants.QueueDesc,
                                 style: TextStyle(
                                     color: Constants.sortsecondryColor,
                                     // fontWeight: FontWeight.bold,
@@ -330,7 +441,7 @@ class _StackPageState extends State<StackPage> {
                                                   top: screenHeight * 0.01,
                                                 ),
                                                 child: const Text(
-                                                  "myStack.push(value)",
+                                                  "myQueue.push(value)",
                                                   style: TextStyle(
                                                     color: Colors.white,
                                                     fontSize: 16,
@@ -353,7 +464,7 @@ class _StackPageState extends State<StackPage> {
                                               onPressed: () {
                                                 // Copy the text to the clipboard
                                                 FlutterClipboard.copy(
-                                                        "myStack.push(value)")
+                                                        "myQueue.push(value)")
                                                     .then((value) {
                                                   // Show a toast message indicating successful copy
 
@@ -404,7 +515,7 @@ class _StackPageState extends State<StackPage> {
                                             top: screenHeight * 0.01,
                                           ),
                                           child: const Text(
-                                            "myStack.pop()",
+                                            "myQueue.pop();",
                                             style: TextStyle(
                                               color: Colors.white,
                                               fontSize: 16,
@@ -426,7 +537,7 @@ class _StackPageState extends State<StackPage> {
                                         ),
                                         onPressed: () {
                                           // Copy the text to the clipboard
-                                          FlutterClipboard.copy("myStack.pop()")
+                                          FlutterClipboard.copy("myQueue.pop()")
                                               .then((value) {
                                             // Show a toast message indicating successful copy
 
@@ -476,7 +587,7 @@ class _StackPageState extends State<StackPage> {
                                             top: screenHeight * 0.01,
                                           ),
                                           child: const Text(
-                                            "int x =myStack.Top()",
+                                            "int x =myQueue.front()",
                                             style: TextStyle(
                                               color: Colors.white,
                                               fontSize: 16,
@@ -499,7 +610,7 @@ class _StackPageState extends State<StackPage> {
                                         onPressed: () {
                                           // Copy the text to the clipboard
                                           FlutterClipboard.copy(
-                                                  "int x =myStack.Top()")
+                                                  "int x =myQueue.front()")
                                               .then((value) {
                                             // Show a toast message indicating successful copy
 
@@ -523,7 +634,7 @@ class _StackPageState extends State<StackPage> {
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
                                     Text(
-                                      "4.isFull",
+                                      "4.Size",
                                       style: TextStyle(
                                           color: Constants.sortsecondryColor,
                                           fontWeight: FontWeight.bold,
@@ -549,7 +660,7 @@ class _StackPageState extends State<StackPage> {
                                             top: screenHeight * 0.01,
                                           ),
                                           child: const Text(
-                                            "Bool x =myStack.isFull()",
+                                            "int x =myQueue.size()",
                                             style: TextStyle(
                                               color: Colors.white,
                                               fontSize: 16,
@@ -572,7 +683,7 @@ class _StackPageState extends State<StackPage> {
                                         onPressed: () {
                                           // Copy the text to the clipboard
                                           FlutterClipboard.copy(
-                                                  "myStack.push(value)")
+                                                  "myQueue.size()")
                                               .then((value) {
                                             // Show a toast message indicating successful copy
 
@@ -699,9 +810,9 @@ class _StackPageState extends State<StackPage> {
                             const Color.fromRGBO(37, 40, 47, 1.0)),
                       ),
                       onPressed: () {
-                        if (integerList.length >
+                        if (QueueintegerList.length >
                             int.parse(_sizeEditingController.text)) {
-                          while (integerList.length !=
+                          while (QueueintegerList.length !=
                               int.parse(_sizeEditingController.text)) {
                             removeElement();
                           }
@@ -769,25 +880,8 @@ class _StackPageState extends State<StackPage> {
                             const Color.fromRGBO(37, 40, 47, 1.0)),
                       ),
                       onPressed: () {
-                        if (size > integerList.length) {
+                        if (size > QueueintegerList.length) {
                           addElement();
-                        } else {
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: const Text('Your Stack is Full ..'),
-                                actions: <Widget>[
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                    child: const Text('Close'),
-                                  ),
-                                ],
-                              );
-                            },
-                          );
                         }
 
                         Navigator.of(context).pop();

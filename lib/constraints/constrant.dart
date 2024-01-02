@@ -198,4 +198,11 @@ data structure that follows the LIFO (Last-In
 deletion operations from one end of the stack 
 data structure, that is top.
 ''';
+  static String QueueDesc = '''
+A queue is a fundamental data structure in 
+computer science that follows the First In,
+First Out (FIFO) principle. In a queue, 
+the first element added is the first one 
+to be removed. 
+''';
 }

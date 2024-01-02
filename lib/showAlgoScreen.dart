@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 import 'constraints/constrant.dart';
+import 'pages/Queue/queue.dart';
 import 'pages/Sorting/sort.dart';
 import 'pages/Stack/Stack.dart';
 import 'providers/search/binary_search_provider.dart';
@@ -17,7 +18,7 @@ class ShowAlgoScreen extends StatefulWidget {
     super.key,
   });
   final List<String> algo2 = ['Searching', 'Sorting', 'Hashing'];
-  final List<String> algo1 = ['String', 'LinkList', 'Tree', 'Graph'];
+  final List<String> algo1 = ['String', 'Queue', 'Tree', 'Graph'];
   @override
   State<ShowAlgoScreen> createState() => _ShowAlgoScreenState();
 }
@@ -165,6 +166,14 @@ class _ShowAlgoScreenState extends State<ShowAlgoScreen> {
                                           MaterialPageRoute(
                                               builder: (context) =>
                                                   StackPage()),
+                                        );
+                                      }
+                                      if (widget.algo1[index] == 'Queue') {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  QueuePage()),
                                         );
                                       }
                                     },

@@ -112,49 +112,49 @@ class _StackPageState extends State<StackPage> {
             const SizedBox(height: 100),
             Center(
               child: Hero(
-  tag: 'stack_list', // Specify a unique tag for the Hero animation
-  child: AnimatedContainer(
-    duration: const Duration(milliseconds: 500),
-    width: 150,
-    height: size * 60,
-    decoration: const BoxDecoration(
-      border: Border(
-        left: BorderSide(color: Colors.black, width: 2.0),
-        right: BorderSide(color: Colors.black, width: 2.0),
-        bottom: BorderSide(color: Colors.black, width: 2.0),
-      ),
-    ),
-    child: ListView.builder(
-      reverse: true,
-      itemCount: integerList.length,
-      itemBuilder: (context, index) {
-        final int value = integerList[index];
-        return Hero(
-          tag: 'item_$index', // Use a unique tag for each item
-          child: AnimatedOpacity(
-            duration: const Duration(milliseconds: 500),
-            opacity: 1.0,
-            child: ListTile(
-              title: Container(
-                color: Constants.primaryColor,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Center(
-                    child: Text(
-                      '$value',
-                      style: const TextStyle(fontSize: 16),
+                tag:
+                    'stack_list', // Specify a unique tag for the Hero animation
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 500),
+                  width: 150,
+                  height: size * 60,
+                  decoration: const BoxDecoration(
+                    border: Border(
+                      left: BorderSide(color: Colors.black, width: 2.0),
+                      right: BorderSide(color: Colors.black, width: 2.0),
+                      bottom: BorderSide(color: Colors.black, width: 2.0),
                     ),
+                  ),
+                  child: ListView.builder(
+                    reverse: true,
+                    itemCount: integerList.length,
+                    itemBuilder: (context, index) {
+                      final int value = integerList[index];
+                      return Hero(
+                        tag: 'item_$index', // Use a unique tag for each item
+                        child: AnimatedOpacity(
+                          duration: const Duration(milliseconds: 500),
+                          opacity: 1.0,
+                          child: ListTile(
+                            title: Container(
+                              color: Constants.primaryColor,
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Center(
+                                  child: Text(
+                                    '$value',
+                                    style: const TextStyle(fontSize: 16),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ),
               ),
-            ),
-          ),
-        );
-      },
-    ),
-  ),
-),
-
             ),
           ],
         ),
